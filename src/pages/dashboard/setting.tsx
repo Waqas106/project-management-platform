@@ -1,6 +1,28 @@
 import { Briefcase, Calendar, CircleCheck, Hourglass, Plus } from "lucide-react";
+import { useEffect, useState } from "react";
+import {useForm} from "react-hook-form";
 
 export default function Setting(){
+    const[projects, setProjects] = useState<any []>([]);
+    const[showForm, setShowForm] = useState(false);
+    const[tasks, setTasks] = useState<TaskFormType[]>([]);
+
+    type TaskFormType = {
+    title: string;
+    description: string;
+    dueDate: string;
+    projectId: string;
+    status: "todo" | "in-progress" | "completed";
+    priority: "high" | "medium" | "low";
+  };
+
+    const {
+        register,
+        handleSubmit,
+        reset,
+        formState: {errors},
+    }= useForm<TaskFormType>();
+
     const productivity=[
         {
             title:"Completed Tasks",
@@ -22,23 +44,23 @@ export default function Setting(){
         }
     ]
 
-    const tasks=[
-        {
-            title:"Design the new user onboarding flow",
-            due:"Oct 31",
-            priority:"High"
-        },
-        {
-            title:"Develop API for user authentication",
-            due:"Nov 5",
-            priority:"Medium"
-        },
-        {
-            title:"Setup project repository on GitHub",
-            due:"Nov 28",
-            priority:"Low"
-        }
-    ]
+    // const tasks=[
+    //     {
+    //         title:"Design the new user onboarding flow",
+    //         due:"Oct 31",
+    //         priority:"High"
+    //     },
+    //     {
+    //         title:"Develop API for user authentication",
+    //         due:"Nov 5",
+    //         priority:"Medium"
+    //     },
+    //     {
+    //         title:"Setup project repository on GitHub",
+    //         due:"Nov 28",
+    //         priority:"Low"
+    //     }
+    // ]
 
     const statusStyles:Record<string, string>={
         Active:"bg-blue-600/15 text-blue-600",
@@ -48,10 +70,91 @@ export default function Setting(){
     }
 
     const priorityStyles:Record<string, string>={
-        High:"bg-red-400/15 text-red-400",
-        Low: "bg-green-600/15 text-green-600",
-        Medium:"bg-yellow-400/15 text-yellow-800"
+        high:"bg-red-400/15 text-red-400",
+        low: "bg-green-600/15 text-green-600",
+        medium:"bg-yellow-400/15 text-yellow-800"
     }
+
+    const fetchProjectsforDropdown = async() =>{
+        try {
+            const token = localStorage.getItem("token");
+
+            const res = await fetch("http://localhost:5000/project",{
+                headers:{
+                    Authorization : `Bearer ${token}`
+                },
+            })
+
+            const data = await res.json();
+            setProjects(data.projects);
+        } catch (error) {
+            console.error("error fetching projects", error);
+        }
+    }
+
+    useEffect(()=>{
+        fetchProjectsforDropdown();
+        getTasks();
+    },[]);
+
+    const onSubmitTask = async (data: TaskFormType) => {
+        try {
+            const token = localStorage.getItem("token");
+
+            const res = await fetch("http://localhost:5000/task/create", {
+                method: "POST",
+                headers:{
+                    "Content-Type" : "application/json",
+                    Authorization: `Bearer ${token}`
+                },
+                body: JSON.stringify(data)
+            });
+
+            const result = await res.json();
+
+            if(result.success){
+                alert("project created");
+                reset();
+                setShowForm(!showForm);
+                getTasks();
+            } else {
+                alert(result.message || "failed to create task")
+            }
+
+
+        } catch (error) {
+            console.error("task creating error", error);
+            
+        }
+    }
+
+
+    const getTasks = async() =>{
+        try {
+            const token = localStorage.getItem("token");
+
+            const res = await fetch("http://localhost:5000/task", {
+                headers:{
+                    Authorization : `Bearer ${token}`
+                }
+            });
+
+            const data = await res.json();
+            setTasks(data.tasks);
+            console.log(data.tasks)
+        } catch (error) {
+            console.error("tasks fetching error", error);
+            alert("Task fetching error");
+        }
+    }
+
+    const todoTasks = tasks.filter(t => t.status === "todo");
+    const inProgressTasks = tasks.filter(t => t.status === "in-progress");
+    const completedTasks = tasks.filter(t => t.status === "completed");
+
+
+
+
 
     return(
         <div className="px-8 py-4 space-y-4">
@@ -72,11 +175,97 @@ export default function Setting(){
                     })}
                 </div>
             </div>
+
+            {showForm && ( 
+            <form
+              onSubmit={handleSubmit(onSubmitTask)}
+              className="space-y-4 bg-white p-6 rounded-md shadow"
+            >
+              <div>
+                <label className="block font-semibold mb-1">Project</label>
+                <select
+                  {...register("projectId", { required: true })}
+                  className="w-full border rounded-md px-3 py-2"
+                >
+                  <option value="">Select Project</option>
+                  {projects?.map((proj) => (
+                    <option key={proj._id} value={proj._id}>
+                      {proj.title}
+                    </option>
+                  ))}
+                </select>
+                {errors.projectId && <p className="text-red-500 text-sm">Project required</p>}
+              </div>
+            
+              <div>
+                <label className="block font-semibold mb-1">Task Title</label>
+                <input
+                  {...register("title", { required: true })}
+                  className="w-full border rounded-md px-3 py-2"
+                  placeholder="Enter task title"
+                />
+              </div>
+            
+              <div>
+                <label className="block font-semibold mb-1">Description</label>
+                <textarea
+                  {...register("description")}
+                  className="w-full border rounded-md px-3 py-2"
+                  rows={3}
+                />
+              </div>
+            
+              <div>
+                <label className="block font-semibold mb-1">Due Date</label>
+                <input
+                  type="date"
+                  {...register("dueDate")}
+                  className="w-full border rounded-md px-3 py-2"
+                />
+              </div>
+            
+              <div>
+                <label className="block font-semibold mb-1">Status</label>
+                <select
+                  {...register("status")}
+                  className="w-full border rounded-md px-3 py-2"
+                  defaultValue="todo"
+                >
+                  <option value="todo">To Do</option>
+                  <option value="in-progress">In Progress</option>
+                  <option value="completed">Completed</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block font-semibold mb-1">Priority</label>
+                <select
+                  {...register("priority")}
+                  className="w-full border rounded-md px-3 py-2"
+                  defaultValue="medium"
+                >
+                  <option value="high">High</option>
+                  <option value="medium">Medium</option>
+                  <option value="low">Low</option>
+                </select>
+              </div>
+            
+              <button
+                type="submit"
+                className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
+              >
+                Create Task
+              </button>
+            </form>
+            )}
+
             <div>
                 <div className="py-4 flex justify-between items-center mb-4">
                     <h3 className="text-3xl font-bold">My Task Board</h3>
                     <div>
-                        <button className="flex gap-2 items-center px-4 py-2 rounded-md bg-blue-600 text-white font-bold hover:scale-102 transition duration-200 cursor-pointer ">
+                        <button className="flex gap-2 items-center px-4 py-2 rounded-md bg-blue-600 text-white font-bold hover:scale-102 transition duration-200 cursor-pointer "
+                        onClick={()=> setShowForm(!showForm)}
+                        >
                         <Plus size={20}/>
                         New Task
                         </button>
@@ -86,16 +275,16 @@ export default function Setting(){
                     <div className="bg-gray-400/6 rounded-lg space-y-2">
                         <div className="flex justify-between px-6 py-4 border-b-4 border-red-400">
                             <h3 className="text-lg font-bold">To Do</h3>
-                            <span className={`px-2 py-1 font-semibold rounded-full ${statusStyles["To Do"]}`}>{tasks.length}</span>
+                            <span className={`px-2 py-1 font-semibold rounded-full ${statusStyles["To Do"]}`}>{todoTasks.length}</span>
                         </div>
                         <div className="flex flex-col px-6 py-2 gap-3">
-                            {tasks.map((task, idx)=>(
+                            {todoTasks.map((task, idx)=>(
                                 <div key={idx} className="p-3 bg-white rounded-lg">
                                     <h3 className="text-lg font-semibold pb-2">{task.title}</h3>
                                     <div className="flex justify-between text-sm">
                                         <span className="flex gap-2 items-center">
                                             <Calendar size={15} />
-                                            Oct 31
+                                            {task.dueDate.toString().split("T")[0]}
                                         </span>
                                         <span className={`px-2 py-1 rounded-full text-xs font-semibold ${priorityStyles[task.priority]}`}>{task.priority}</span>
                                     </div>
@@ -107,16 +296,16 @@ export default function Setting(){
                     <div className="bg-gray-400/6 rounded-lg space-y-2">
                         <div className="flex justify-between px-6 py-4 border-b-4 border-yellow-400">
                             <h3 className="text-lg font-bold">In Progress</h3>
-                            <span className={`px-2 py-1 font-semibold rounded-full ${statusStyles["In Progress"]}`}>{tasks.length}</span>
+                            <span className={`px-2 py-1 font-semibold rounded-full ${statusStyles["In Progress"]}`}>{inProgressTasks.length}</span>
                         </div>
                         <div className="flex flex-col px-6 py-2 gap-3">
-                            {tasks.map((task, idx)=>(
+                            {inProgressTasks.map((task, idx)=>(
                                 <div key={idx} className="p-3 bg-white rounded-lg">
                                     <h3 className="text-lg font-semibold pb-2">{task.title}</h3>
                                     <div className="flex justify-between text-sm">
                                         <span className="flex gap-2 items-center">
                                             <Calendar size={15} />
-                                            Oct 31
+                                            {task.dueDate.toString().split("T")[0]}
                                         </span>
                                         <span className={`px-2 py-1 rounded-full text-xs font-semibold ${priorityStyles[task.priority]}`}>{task.priority}</span>
                                     </div>
@@ -128,16 +317,16 @@ export default function Setting(){
                     <div className="bg-gray-400/6 rounded-lg space-y-2">
                         <div className="flex justify-between px-6 py-4 border-b-4 border-green-400">
                             <h3 className="text-lg font-bold">Completed</h3>
-                            <span className={`px-2 py-1 font-semibold rounded-full ${statusStyles["Completed"]}`}>{tasks.length}</span>
+                            <span className={`px-2 py-1 font-semibold rounded-full ${statusStyles["Completed"]}`}>{completedTasks.length}</span>
                         </div>
                         <div className="flex flex-col px-6 py-2 gap-3">
-                            {tasks.map((task, idx)=>(
+                            {completedTasks.map((task, idx)=>(
                                 <div key={idx} className="p-3 bg-white rounded-lg">
                                     <h3 className="text-lg font-semibold pb-2">{task.title}</h3>
                                     <div className="flex justify-between text-sm">
                                         <span className="flex gap-2 items-center">
                                             <Calendar size={15} />
-                                            Oct 31
+                                            {task.dueDate.toString().split("T")[0]}
                                         </span>
                                         <span className={`px-2 py-1 rounded-full text-xs font-semibold ${priorityStyles[task.priority]}`}>{task.priority}</span>
                                     </div>

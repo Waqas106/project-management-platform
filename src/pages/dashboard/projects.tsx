@@ -209,7 +209,7 @@ export default function Projects(){
                         <div className="space-y-2">
                             <span className="flex gap-1 items-center">
                                 <CalendarDays size={18}/>
-                                Due: {proj.dueDate}
+                                Due: {proj.dueDate.toString().split("T")[0]}
                             </span>
                             <div className="flex gap-2 text-sm ">
                                 <button onClick={() => editProject(proj)} className="cursor-pointer">
