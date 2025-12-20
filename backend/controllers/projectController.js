@@ -77,3 +77,28 @@ export const updateProject = async(req, res) => {
         res.status(500).json({success: false, message: "Server  error"});
     }
 }
+
+
+export const deleteProject = async(req, res) => {
+    try {
+        const project = await Project.findByIdAndDelete({
+            _id: req.params.id,
+            userId: req.user._id
+        })
+
+        if(!project){
+            return res.status(400).json({
+                success: false,
+                message: "project not found"
+            })
+        }
+
+        res.status(200).json({
+            success: true,
+            message:"Project Deleted"
+        });
+
+    } catch (error) {
+        console.error(error, "Server error");
+    }
+}

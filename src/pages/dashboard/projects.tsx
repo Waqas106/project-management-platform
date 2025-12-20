@@ -14,6 +14,7 @@ export default function Projects(){
     const [showForm, setShowForm] = useState(false);
     const [projects, setProjects] = useState<ProjectType[]>([]);
     const [isLoading, setIsLoading] = useState(false);
+    const [editingProject, setEditingProject] = useState<ProjectType | null >(null);
     // const projects=[
     //     {
     //         title:"E-commerce Platform Redesign",
@@ -53,8 +54,10 @@ export default function Projects(){
     const onSubmit = async (data: ProjectType) =>{
         try {
             const token = localStorage.getItem("token");
-            const res = await fetch("http://localhost:5000/project/create", {
-                method: "POST",
+            const url = editingProject ? `http://localhost:5000/project/${editingProject._id}` : "http://localhost:5000/project/create";
+            const Method = editingProject ? "PUT" : "POST";
+            const res = await fetch(url, {
+                method: Method,
                 headers: {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${token}`,
@@ -63,12 +66,13 @@ export default function Projects(){
             });
             const result = await res.json();
             if(result.success){
-                alert("Project Created");
+                alert(editingProject? "Project Updated" : "Project Created");
                 reset();
                 setShowForm(false);
+                setEditingProject(null);
                 fetchProjects();
             } else {
-                alert(result.message || "failed to create project");
+                alert(result.message || "Operation failed");
             }
         } catch (error) {
             console.error("Server error", error);
@@ -84,7 +88,7 @@ export default function Projects(){
                 headers: {Authorization: `Bearer ${token}`},
             });
             const data = await res.json();
-            console.log(data);
+
             setProjects(data.projects);
         } catch (error) {
             console.error("error", error);
@@ -98,12 +102,35 @@ export default function Projects(){
     }, []);
 
 
-    const editProject = () =>{
-        alert("editing feature coming...")
+    const editProject = (projects: ProjectType) =>{
+        setEditingProject(projects);
+        setShowForm(true);
+        reset(projects);
     }
 
-    const delProject = () => {
-        alert("deleting feature coming...")
+    const delProject = async(id?: string) => {
+        const confirm = window.confirm("Are you sure you want to delete");
+        if(!confirm){
+            return;
+        }
+
+        const token = localStorage.getItem("token");
+
+        const res = await fetch(`http://localhost:5000/project/${id}`, {
+            method: "DELETE",
+            headers: {
+                Authorization: `Bearer ${token}`
+            },  
+        })
+        
+        const result = await res.json();
+
+        if(result.success){
+            alert("Project deleted");
+            fetchProjects();
+        } else {
+            alert(result.message || "Delete Failed");
+        }
     }
 
 
@@ -157,7 +184,7 @@ export default function Projects(){
                   type="submit"
                   className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700"
                 >
-                  Create Project
+                  {editingProject ? "Update Project" : "Create Project"}
                 </button>
               </form>
             </div>
@@ -185,10 +212,10 @@ export default function Projects(){
                                 Due: {proj.dueDate}
                             </span>
                             <div className="flex gap-2 text-sm ">
-                                <button onClick={() => editProject()} className="cursor-pointer">
+                                <button onClick={() => editProject(proj)} className="cursor-pointer">
                                     edit
                                 </button>
-                                <button onClick={()=> delProject()} className="cursor-pointer">
+                                <button onClick={()=> delProject(proj._id)} className="cursor-pointer">
                                     delete
                                 </button>
                             </div>
