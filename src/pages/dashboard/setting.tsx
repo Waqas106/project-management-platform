@@ -23,44 +23,6 @@ export default function Setting(){
         formState: {errors},
     }= useForm<TaskFormType>();
 
-    const productivity=[
-        {
-            title:"Completed Tasks",
-            num:"12",
-            icon:CircleCheck,
-            status:"Completed"
-        },
-        {
-            title:"Upcoming Deadlines",
-            num:"4",
-            icon:Hourglass,
-            status:"In Progress"
-        },
-        {
-            title:"Active Projects",
-            num:"2",
-            icon:Briefcase,
-            status:"Active"
-        }
-    ]
-
-    // const tasks=[
-    //     {
-    //         title:"Design the new user onboarding flow",
-    //         due:"Oct 31",
-    //         priority:"High"
-    //     },
-    //     {
-    //         title:"Develop API for user authentication",
-    //         due:"Nov 5",
-    //         priority:"Medium"
-    //     },
-    //     {
-    //         title:"Setup project repository on GitHub",
-    //         due:"Nov 28",
-    //         priority:"Low"
-    //     }
-    // ]
 
     const statusStyles:Record<string, string>={
         Active:"bg-blue-600/15 text-blue-600",
@@ -152,8 +114,34 @@ export default function Setting(){
     const inProgressTasks = tasks.filter(t => t.status === "in-progress");
     const completedTasks = tasks.filter(t => t.status === "completed");
 
+    const upcomingDeadlinesCount = tasks.filter((task) => {
+        const today = new Date();
+        const due = new Date(task.dueDate);
+        const DiffInDays = (due.getTime() - today.getTime())/(1000* 60 *60 *24);
 
+        return DiffInDays > 0 && DiffInDays <= 7;
+    }).length
 
+        const productivity=[
+        {
+            title:"Completed Tasks",
+            num: completedTasks.length,
+            icon:CircleCheck,
+            status:"Completed"
+        },
+        {
+            title:"Upcoming Deadlines",
+            num:upcomingDeadlinesCount,
+            icon:Hourglass,
+            status:"In Progress"
+        },
+        {
+            title:"Active Projects",
+            num: projects.length,
+            icon:Briefcase,
+            status:"Active"
+        }
+    ]
 
 
     return(
