@@ -1,6 +1,7 @@
 import { CalendarDays, Plus } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {useForm} from "react-hook-form";
+import { useDashboard } from "../../context/dashboardContext";
 
 interface ProjectType {
     _id?: string;
@@ -12,35 +13,8 @@ interface ProjectType {
 
 export default function Projects(){
     const [showForm, setShowForm] = useState(false);
-    const [projects, setProjects] = useState<ProjectType[]>([]);
-    const [isLoading, setIsLoading] = useState(false);
     const [editingProject, setEditingProject] = useState<ProjectType | null >(null);
-    // const projects=[
-    //     {
-    //         title:"E-commerce Platform Redesign",
-    //         des:"Complete redesign of the main e-commerce website and mobile application.",
-    //         priority:"High Priority",
-    //         due:"2025-12-2025"
-    //     },
-    //     {
-    //         title:"E-commerce Platform Redesign",
-    //         des:"Complete redesign of the main e-commerce website and mobile application.",
-    //         priority:"Medium Priority",
-    //         due:"2025-12-2025"
-    //     },
-    //     {
-    //         title:"E-commerce Platform Redesign",
-    //         des:"Complete redesign of the main e-commerce website and mobile application.",
-    //         priority:"Low Priority",
-    //         due:"2025-12-2025"
-    //     },
-    //     {
-    //         title:"E-commerce Platform Redesign",
-    //         des:"Complete redesign of the main e-commerce website and mobile application.",
-    //         priority:"High Priority",
-    //         due:"2025-12-2025"
-    //     },
-    // ]
+    const {projects, loading, refetchAll} = useDashboard();
 
     const{register, reset, handleSubmit} = useForm<ProjectType>({});
 
@@ -70,7 +44,7 @@ export default function Projects(){
                 reset();
                 setShowForm(false);
                 setEditingProject(null);
-                fetchProjects();
+                refetchAll();
             } else {
                 alert(result.message || "Operation failed");
             }
@@ -78,28 +52,6 @@ export default function Projects(){
             console.error("Server error", error);
         }
     }
-
-
-    const fetchProjects = async () =>{
-        setIsLoading(true);
-        try {
-            const token = localStorage.getItem("token");
-            const res = await fetch("http://localhost:5000/project",{
-                headers: {Authorization: `Bearer ${token}`},
-            });
-            const data = await res.json();
-
-            setProjects(data.projects);
-        } catch (error) {
-            console.error("error", error);
-        }
-        setIsLoading(false);
-    }
-
-
-    useEffect(()=>{
-        fetchProjects();
-    }, []);
 
 
     const editProject = (projects: ProjectType) =>{
@@ -127,7 +79,7 @@ export default function Projects(){
 
         if(result.success){
             alert("Project deleted");
-            fetchProjects();
+            refetchAll();
         } else {
             alert(result.message || "Delete Failed");
         }
@@ -191,7 +143,7 @@ export default function Projects(){
             )}
 
 
-            {isLoading? (
+            {loading? (
                 <p>Loading projects....</p>
             ): projects?.length === 0 ? (
                 <p className="text-gray-500 text-center mt-4">

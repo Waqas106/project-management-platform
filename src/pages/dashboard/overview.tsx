@@ -1,60 +1,97 @@
 import { CircleCheckBig, ClockFading, Zap } from "lucide-react";
 import MiniChart from "../../components/dashboard/miniChart";
+import { useDashboard } from "../../context/dashboardContext";
 
 function OverView(){
+
+    const { projects, tasks} = useDashboard();
+
+    const activeProjects = projects.filter(p => p.status === "active").length;
+    const compProjects = projects.filter(p => p.status === "completed").length;
+    const pendingTasks = tasks.filter(t => t.status !== "completed").length;
+
     const overviewCards=[
         {
             head:"Active Projects",
             icon: Zap,
-            num:"12",
+            num:activeProjects,
             status: "Active"
         },
         {
             head:"Completed Projects",
             icon: CircleCheckBig,
-            num:"9",
+            num:compProjects,
             status:"Completed"
         },
         {
             head:"Pending Tasks",
             icon: ClockFading,
-            num:"27",
+            num:pendingTasks,
             status:"Pending"
         }
     ]
 
-    const Activity=[
-        {
-            text:"Ali completed task “API Integration” ",
-            time:"2 hours ago"
-        },
-        {
-            text:"Waqas created new project “CRM System”",
-            time:"3 hour ago"
-        }
-    ]
+    type ActivityTypes = {
+        id : string;
+        message: string;
+        time: string;
+    }
 
-    const deadlines =[
-        {
-            project:"Planify Dashboard",
-            task:"Frontend UI review",
-            due:"Oct 23, 2025",
-            status:"Pending"
-        },
-         {
-            project:"Planify Dashboard",
-            task:"Frontend UI review",
-            due:"Oct 23, 2025",
-            status:"Pending"
-        },
-         {
-            project:"Planify Dashboard",
-            task:"Frontend UI review",
-            due:"Oct 23, 2025",
-            status:"Pending"
-        },
-        
-    ]
+    const activities: ActivityTypes[] = [
+        ...projects.map((p) => ({ 
+            id: p._id,
+            message: `Project "${p.title}" created`,
+            time: p.createdAt,
+        })),
+
+        ...projects.map((p) => ({ 
+            id: p._id,
+            message: `Project "${p.title}" edited`,
+            time: p.updatedAt,
+        })),
+
+        ...tasks.map((t) => ({
+            id: t._id,
+            message: `Task "${t.title}" created`,
+            time: t.createdAt,
+        })),
+
+        ...tasks.map((t) => ({
+            id: t._id,
+            message: `Task "${t.title}" marked as ${t.status}`,
+            time: t.updatedAt,
+        })),
+    ];
+
+    const recentActivities = activities
+    .sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime())
+    .slice(0, 5);
+
+    const timeAgo = (date: string) => {
+  const diff = Date.now() - new Date(date).getTime();
+  const minutes = Math.floor(diff / 60000);
+
+  if (minutes < 1) return "Just now";
+  if (minutes < 60) return `${minutes} min ago`;
+
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours} hours ago`;
+
+  const days = Math.floor(hours / 24);
+  return `${days} days ago`;
+};
+
+    const upcomingDeadlines = tasks.filter(t => {
+        const today = new Date();
+        const due = new Date(t.dueDate);
+        const DiffInDays = (due.getTime() - today.getTime())/(1000* 60 *60 *24);
+        return DiffInDays >= 0 && DiffInDays <= 7 && t.status !== "completed";
+    })
+
+    const getProjectName = (projectId : string) => {
+        const project = projects.find(p => p._id === projectId);
+        return project ? project.title : "Unknown Project";
+    }
 
     const statusStyles: Record<string, string> = {
         Active: "text-blue-600 bg-blue-600/15",
@@ -86,22 +123,22 @@ function OverView(){
                 <div className="flex-1 p-4 bg-white rounded-lg shadow-sm">
                     <h3 className="text-lg font-bold pb-3">Upcoming Deadlines</h3>
                     <div className="space-y-2">
-                        {deadlines.map((deadline, idx)=>(
+                        {upcomingDeadlines.map((deadline, idx)=>(
                             <div key={idx} className="flex justify-between bg-gray-100/10 rounded-md px-4 py-2">
                                 <div className="space-y-1">
                                     <h3 className="text-md text-gray-700"> 
                                     <span className="font-bold">Project: </span>
-                                     {deadline.project}
+                                     {getProjectName(deadline.projectId)}
                                     </h3>
                                     <h4 className="text-sm text-gray-600">
                                         <span className="font-semibold">Task: </span>
-                                        {deadline.task}
+                                        {deadline.title}
                                     </h4>
                                 </div>
                                 <div>
                                     <p>
                                         <span className="font-semibold">Due: </span>
-                                        {deadline.due}
+                                        {deadline.dueDate.toString().split("T")[0]}
                                     </p>
                                     <p className="text-yellow-600" >{deadline.status}</p>
                                 </div>
@@ -112,10 +149,10 @@ function OverView(){
                 <div className="p-4 bg-white rounded-lg shadow-sm ">
                     <h3 className="text-lg font-bold pb-3">Recent Activity</h3>
                     <div className="space-y-3">
-                        {Activity.map((act, idx)=>(
+                        {recentActivities.map((act, idx)=>(
                             <div key={idx}>
-                                <p className="text-md text-gray-700">{act.text}</p>
-                                <span className="text-sm text-gray-400">{act.time}</span>
+                                <p className="text-md text-gray-700">{act.message}</p>
+                                <span className="text-sm text-gray-400">{timeAgo(act.time)}</span>
                             </div>
                         ))}
                     </div>

@@ -1,6 +1,7 @@
 import { Outlet } from "react-router-dom";
 import SideBar from "../../components/dashboard/sideBar";
 import TopBar from "../../components/dashboard/topBar";
+import { DashboardProvider } from "../../context/dashboardContext";
 
 export default function UserDashboard(){
     return(
@@ -10,7 +11,9 @@ export default function UserDashboard(){
             </aside>
             <main className="flex-1">
                 <TopBar/>
+                <DashboardProvider>
                 <Outlet/>
+                </DashboardProvider>
             </main>
         </div>
     )

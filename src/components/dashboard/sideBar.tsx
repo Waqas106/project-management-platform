@@ -14,8 +14,8 @@ function SideBar(){
             icon: FolderOpen
         },
         {
-            href:"setting",
-            name:"Settings",
+            href:"tasks",
+            name:"Tasks",
             icon: Settings
         }
     ]

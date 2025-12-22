@@ -1,11 +1,11 @@
 import { Briefcase, Calendar, CircleCheck, Hourglass, Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 import {useForm} from "react-hook-form";
+import { useDashboard } from "../../context/dashboardContext";
 
-export default function Setting(){
-    const[projects, setProjects] = useState<any []>([]);
+export default function Tasks(){
     const[showForm, setShowForm] = useState(false);
-    const[tasks, setTasks] = useState<TaskFormType[]>([]);
+    const {projects, tasks, loading, refetchAll} = useDashboard();
 
     type TaskFormType = {
     title: string;
@@ -37,28 +37,6 @@ export default function Setting(){
         medium:"bg-yellow-400/15 text-yellow-800"
     }
 
-    const fetchProjectsforDropdown = async() =>{
-        try {
-            const token = localStorage.getItem("token");
-
-            const res = await fetch("http://localhost:5000/project",{
-                headers:{
-                    Authorization : `Bearer ${token}`
-                },
-            })
-
-            const data = await res.json();
-            setProjects(data.projects);
-        } catch (error) {
-            console.error("error fetching projects", error);
-        }
-    }
-
-    useEffect(()=>{
-        fetchProjectsforDropdown();
-        getTasks();
-    },[]);
-
     const onSubmitTask = async (data: TaskFormType) => {
         try {
             const token = localStorage.getItem("token");
@@ -78,7 +56,7 @@ export default function Setting(){
                 alert("project created");
                 reset();
                 setShowForm(!showForm);
-                getTasks();
+                refetchAll();
             } else {
                 alert(result.message || "failed to create task")
             }
@@ -87,26 +65,6 @@ export default function Setting(){
         } catch (error) {
             console.error("task creating error", error);
             
-        }
-    }
-
-
-    const getTasks = async() =>{
-        try {
-            const token = localStorage.getItem("token");
-
-            const res = await fetch("http://localhost:5000/task", {
-                headers:{
-                    Authorization : `Bearer ${token}`
-                }
-            });
-
-            const data = await res.json();
-            setTasks(data.tasks);
-            console.log(data.tasks)
-        } catch (error) {
-            console.error("tasks fetching error", error);
-            alert("Task fetching error");
         }
     }
 
