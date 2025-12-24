@@ -2,6 +2,7 @@ import { Briefcase, Calendar, CircleCheck, Hourglass, Plus } from "lucide-react"
 import { useEffect, useState } from "react";
 import {useForm} from "react-hook-form";
 import { useDashboard } from "../../context/dashboardContext";
+import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 
 export default function Tasks(){
     const[showForm, setShowForm] = useState(false);
@@ -53,7 +54,7 @@ export default function Tasks(){
             const result = await res.json();
 
             if(result.success){
-                alert("project created");
+                alert("Task created");
                 reset();
                 setShowForm(!showForm);
                 refetchAll();
@@ -100,6 +101,46 @@ export default function Tasks(){
             status:"Active"
         }
     ]
+
+
+const handleDragEnd = async (result: any) => {
+  const { source, destination, draggableId } = result;
+
+  if (!destination) return;
+  if (
+    source.droppableId === destination.droppableId &&
+    source.index === destination.index
+  ) return;
+
+  const newStatus = destination.droppableId;
+
+  try {
+    await updateTaskStatus(draggableId, newStatus);
+    await refetchAll(); 
+  } catch (error) {
+    console.error("Failed to update task status", error);
+  }
+};
+
+const updateTaskStatus = async (taskId: string, status: string) => {
+    const token = localStorage.getItem("token");
+  const res = await fetch(`http://localhost:5000/task/${taskId}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization : `Bearer ${token}`,
+    },
+    body: JSON.stringify({ status }),
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to update task status");
+  }
+
+  return res.json();
+};
+
+
 
 
     return(
@@ -217,15 +258,29 @@ export default function Tasks(){
                         </button>
                     </div>
                 </div>
+                <DragDropContext onDragEnd={handleDragEnd}>
                 <div className="grid grid-cols-3 gap-6">
-                    <div className="bg-gray-400/6 rounded-lg space-y-2">
+                    <Droppable droppableId="todo">
+                      {(provided) => (
+                        <div
+                          ref={provided.innerRef}
+                          {...provided.droppableProps}
+                          className="bg-gray-400/6 rounded-lg space-y-2"
+                        >
                         <div className="flex justify-between px-6 py-4 border-b-4 border-red-400">
                             <h3 className="text-lg font-bold">To Do</h3>
                             <span className={`px-2 py-1 font-semibold rounded-full ${statusStyles["To Do"]}`}>{todoTasks.length}</span>
                         </div>
                         <div className="flex flex-col px-6 py-2 gap-3">
                             {todoTasks.map((task, idx)=>(
-                                <div key={idx} className="p-3 bg-white rounded-lg">
+                                <Draggable key={task._id} draggableId={task._id} index={idx}>
+                                {(provided) => (
+                                <div
+                                    ref={provided.innerRef}
+                                    {...provided.draggableProps}
+                                    {...provided.dragHandleProps}
+                                    className="p-3 bg-white rounded-lg"
+                                  >
                                     <h3 className="text-lg font-semibold pb-2">{task.title}</h3>
                                     <div className="flex justify-between text-sm">
                                         <span className="flex gap-2 items-center">
@@ -235,18 +290,36 @@ export default function Tasks(){
                                         <span className={`px-2 py-1 rounded-full text-xs font-semibold ${priorityStyles[task.priority]}`}>{task.priority}</span>
                                     </div>
                                 </div>
+                                )}
+                            </Draggable>
                             ))}
+                            {provided.placeholder}
                         </div>
                     </div>
+                    )}
+                    </Droppable>
 
-                    <div className="bg-gray-400/6 rounded-lg space-y-2">
+                    <Droppable droppableId="in-progress">
+                      {(provided) => (
+                        <div
+                          ref={provided.innerRef}
+                          {...provided.droppableProps}
+                          className="bg-gray-400/6 rounded-lg space-y-2"
+                        >
                         <div className="flex justify-between px-6 py-4 border-b-4 border-yellow-400">
                             <h3 className="text-lg font-bold">In Progress</h3>
                             <span className={`px-2 py-1 font-semibold rounded-full ${statusStyles["In Progress"]}`}>{inProgressTasks.length}</span>
                         </div>
                         <div className="flex flex-col px-6 py-2 gap-3">
                             {inProgressTasks.map((task, idx)=>(
-                                <div key={idx} className="p-3 bg-white rounded-lg">
+                                <Draggable key={task._id} draggableId={task._id} index={idx}>
+                                {(provided) => (
+                                <div
+                                    ref={provided.innerRef}
+                                    {...provided.draggableProps}
+                                    {...provided.dragHandleProps}
+                                    className="p-3 bg-white rounded-lg"
+                                  >
                                     <h3 className="text-lg font-semibold pb-2">{task.title}</h3>
                                     <div className="flex justify-between text-sm">
                                         <span className="flex gap-2 items-center">
@@ -256,18 +329,36 @@ export default function Tasks(){
                                         <span className={`px-2 py-1 rounded-full text-xs font-semibold ${priorityStyles[task.priority]}`}>{task.priority}</span>
                                     </div>
                                 </div>
+                                )}
+                            </Draggable>
                             ))}
+                            {provided.placeholder}
                         </div>
                     </div>
+                    )}
+                    </Droppable>
 
-                    <div className="bg-gray-400/6 rounded-lg space-y-2">
+                    <Droppable droppableId="completed">
+                      {(provided) => (
+                        <div
+                          ref={provided.innerRef}
+                          {...provided.droppableProps}
+                          className="bg-gray-400/6 rounded-lg space-y-2"
+                        >
                         <div className="flex justify-between px-6 py-4 border-b-4 border-green-400">
                             <h3 className="text-lg font-bold">Completed</h3>
                             <span className={`px-2 py-1 font-semibold rounded-full ${statusStyles["Completed"]}`}>{completedTasks.length}</span>
                         </div>
                         <div className="flex flex-col px-6 py-2 gap-3">
                             {completedTasks.map((task, idx)=>(
-                                <div key={idx} className="p-3 bg-white rounded-lg">
+                                <Draggable key={task._id} draggableId={task._id} index={idx}>
+                                {(provided) => (
+                                <div
+                                    ref={provided.innerRef}
+                                    {...provided.draggableProps}
+                                    {...provided.dragHandleProps}
+                                    className="p-3 bg-white rounded-lg"
+                                  >
                                     <h3 className="text-lg font-semibold pb-2">{task.title}</h3>
                                     <div className="flex justify-between text-sm">
                                         <span className="flex gap-2 items-center">
@@ -277,10 +368,16 @@ export default function Tasks(){
                                         <span className={`px-2 py-1 rounded-full text-xs font-semibold ${priorityStyles[task.priority]}`}>{task.priority}</span>
                                     </div>
                                 </div>
+                                )}
+                            </Draggable>
                             ))}
+                            {provided.placeholder}
                         </div>
-                    </div>                
+                    </div>
+                    )}
+                    </Droppable>                
                 </div>
+                </DragDropContext>
             </div>
         </div>
     )

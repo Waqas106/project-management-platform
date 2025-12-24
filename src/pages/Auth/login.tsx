@@ -20,7 +20,7 @@ export default function Login(){
                 body: JSON.stringify(formData)
             });
             const data = await res.json();
-            if(!res.ok) return console.log(data.message);
+            if(!res.ok) return console.log(data.message), alert(data.message);
             localStorage.setItem('token', data.token);
 
             alert("Login Succesfully");
