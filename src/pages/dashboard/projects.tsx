@@ -1,4 +1,4 @@
-import { CalendarDays, Plus } from "lucide-react";
+import { CalendarDays, Cross, Plus } from "lucide-react";
 import { useState } from "react";
 import {useForm} from "react-hook-form";
 import { useDashboard } from "../../context/dashboardContext";
@@ -95,7 +95,7 @@ export default function Projects(){
                 </div>
                 <div>
                     <button onClick={()=> setShowForm(!showForm)} className="flex gap-2 items-center px-4 py-2 rounded-md bg-blue-600 text-white font-bold hover:scale-102 transition duration-200 cursor-pointer ">
-                    <Plus size={20}/>
+                    {showForm? <Cross size={20} /> : <Plus size={20}/> } 
                     {showForm? "Cancel" : "Add Project"}
                     </button>
                 </div>
@@ -152,14 +152,14 @@ export default function Projects(){
             ) : (
             <div className="flex flex-col gap-4">
                 {projects?.map((proj)=>(
-                    <div key={proj._id} className="flex justify-between items-center px-6 py-4 bg-white rounded-md shadow-sm hover:shadow-md">
+                    <div key={proj._id} className="flex justify-between gap-6 items-center px-6 py-4 bg-white rounded-md shadow-sm hover:shadow-md">
                         <div>
                             <span className={`mb-2 text-xs px-2 py-1 rounded-md ${priorityStyles[proj.priority]}`} >{proj.priority}</span>
                             <h3 className="text-lg font-bold pb-2">{proj.title}</h3>
-                            <p className="text-gray-600">{proj.description}</p>
+                            <p className="text-gray-600 ">{proj.description}</p>
                         </div>
-                        <div className="space-y-2">
-                            <span className="flex gap-1 items-center">
+                        <div className="space-y-2 flex-none">
+                            <span className="flex gap-1 items-center ">
                                 <CalendarDays size={18}/>
                                 Due: {proj.dueDate.toString().split("T")[0]}
                             </span>
