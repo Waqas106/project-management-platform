@@ -23,7 +23,6 @@ function SignUp(){
 
             const data = await res.json();
             if(!res.ok) return console.log(data.message);
-            localStorage.setItem('name', data.name);
 
             alert("Signup Successfully!");
             navigate("/login");

@@ -10,8 +10,8 @@ export default function UserDashboard(){
             <SideBar/>
             </aside>
             <main className="flex-1">
-                <TopBar/>
                 <DashboardProvider>
+                <TopBar/>
                 <Outlet/>
                 </DashboardProvider>
             </main>

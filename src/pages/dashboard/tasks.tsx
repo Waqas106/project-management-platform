@@ -6,7 +6,7 @@ import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 
 export default function Tasks(){
     const[showForm, setShowForm] = useState(false);
-    const {projects, tasks, loading, refetchAll} = useDashboard();
+    const {projects, tasks, refetchAll} = useDashboard();
 
     type TaskFormType = {
     title: string;
@@ -78,7 +78,7 @@ export default function Tasks(){
         const due = new Date(task.dueDate);
         const DiffInDays = (due.getTime() - today.getTime())/(1000* 60 *60 *24);
 
-        return DiffInDays > 0 && DiffInDays <= 7;
+        return DiffInDays > 0 && DiffInDays <= 7 && task.status !== "completed";
     }).length
 
         const productivity=[

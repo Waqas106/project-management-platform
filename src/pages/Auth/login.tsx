@@ -22,6 +22,7 @@ export default function Login(){
             const data = await res.json();
             if(!res.ok) return console.log(data.message), alert(data.message);
             localStorage.setItem('token', data.token);
+            localStorage.setItem('name', data.user.name);
 
             alert("Login Succesfully");
             navigate('/userDashboard');

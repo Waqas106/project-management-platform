@@ -1,9 +1,7 @@
 import { Bell, LogOut } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-const notification=[
-    
-]
+import { useDashboard } from "../../context/dashboardContext";
 
 
 
@@ -11,6 +9,32 @@ function TopBar(){
     const [notfOpen, setNotfOpen] = useState(false);
     const [openProfile, setOpenProfile] = useState(false);
     const navigate = useNavigate();
+
+    const {projects, tasks} = useDashboard();
+
+type notificationTypes ={
+    id?: string;
+    message: string;
+    time: string;
+}
+
+const notification : notificationTypes[] = [
+    ...projects.map((p) => ({
+        id: p._id,
+        message: `Project "${p.title}" created`,
+        time: p.createdAt,
+    })),
+
+    ...tasks.map((t) => ({
+        id: t._id,
+        message: `Task "${t.title}" created`,
+        time: t.createdAt,
+    }))
+
+]
+const recentNotification = notification .sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime())
+    .slice(0, 5);
+
 
     const logout = () => {
     localStorage.removeItem("token");
@@ -21,15 +45,21 @@ function TopBar(){
         <header className="flex sticky z-10 top-0 gap-4 justify-end bg-white px-4 py-4 shadow-sm items-center">
             <div className="relative cursor-pointer" onClick={()=>setNotfOpen(!notfOpen) }>
                 <Bell size={20}/>
-                {notification.length > 0 && (<span className="absolute top-[-5px] right-0  text-red-600 text-xs w-2 h-2">{notification.length}</span> )}
+                {notification.length > 0 && (<span className="absolute top-[-9px] right-0  text-red-600 font-extrabold text-xs w-2 h-2">{notification.length}</span> )}
             </div>
             {notfOpen && (
                 <div className="absolute top-15 right-30 px-4 py-2 bg-white rounded-md shadow-md">
                     <h4 className="text-md font-bold mb-2"> Notifications</h4>
                     {notification.length > 0 ? (
-                        <p>New Notifications</p>
+                        recentNotification.map((notf) => (
+                            <p key={notf.id}
+                            className="text-sm text-gray-400 p-1"
+                            >
+                            {notf.message}
+                            </p>
+                        ))
                     ) : (
-                        <p>No New Notifications</p>
+                        <p>No new notification</p>
                     )}
                 </div>
             )}
