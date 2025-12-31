@@ -1,13 +1,21 @@
 import { Bell, LogOut } from "lucide-react";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 const notification=[
     
 ]
 
+
+
 function TopBar(){
     const [notfOpen, setNotfOpen] = useState(false);
     const [openProfile, setOpenProfile] = useState(false);
+    const navigate = useNavigate();
+
+    const logout = () => {
+    localStorage.removeItem("token");
+    navigate("/login");
+}
 
     return(
         <header className="flex sticky z-10 top-0 gap-4 justify-end bg-white px-4 py-4 shadow-sm items-center">
@@ -30,10 +38,10 @@ function TopBar(){
             {openProfile && (
                 <div className="absolute top-15 right-5 px-4 py-2 space-y-6 bg-white rounded-md shadow-md">
                     <Link to="profile" className="hover:text-blue-600 font-semibold"> Profile</Link>
-                    <Link to="/logout" className=" flex items-center gap-1 hover:text-red-500 font-semibold"> 
+                    <button onClick={()=> logout()} className=" flex items-center gap-1 hover:text-red-500 font-semibold"> 
                     <LogOut size={18}/>
                      Logout
-                    </Link>
+                    </button>
                 </div>
             )}
         </header>

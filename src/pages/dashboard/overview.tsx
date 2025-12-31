@@ -98,11 +98,13 @@ function OverView(){
         Pending: "text-yellow-600 bg-yellow-400/15",
         Completed: "text-green-600 bg-green-400/15"
     }
+
+    const name = localStorage.getItem("name");
     
     return(
         <div className="px-6 py-4">
             <div className="px-4 py-2 my-4">
-                <h2 className="text-3xl font-bold">Welcome Back, Waqas!</h2>
+                <h2 className="text-3xl font-bold">Welcome Back, {name}!</h2>
             </div>
             <div className="grid grid-cols-3 gap-6">
                 {overviewCards.map((card, idx)=>{
