@@ -88,13 +88,13 @@ export default function Projects(){
 
     return(
         <div className="px-8 py-4 space-y-6">
-            <div className="flex justify-between my-4 items-center">
+            <div className="flex flex-col sm:flex-row sm:justify-between my-4 sm:items-center">
                 <div>
                     <h2 className="text-3xl font-bold pb-2">Projects</h2>
                     <p className="text-gray-600 ">Here's the list of all your active projects.</p>
                 </div>
                 <div>
-                    <button onClick={()=> setShowForm(!showForm)} className="flex gap-2 items-center px-4 py-2 rounded-md bg-blue-600 text-white font-bold hover:scale-102 transition duration-200 cursor-pointer ">
+                    <button onClick={()=> setShowForm(!showForm)} className="flex gap-2 items-center px-4 py-2 my-2 sm:my-0 rounded-md bg-blue-600 text-white font-bold hover:scale-102 transition duration-200 cursor-pointer ">
                     {showForm? <Cross size={20} /> : <Plus size={20}/> } 
                     {showForm? "Cancel" : "Add Project"}
                     </button>
@@ -152,7 +152,7 @@ export default function Projects(){
             ) : (
             <div className="flex flex-col gap-4">
                 {projects?.map((proj)=>(
-                    <div key={proj._id} className="flex justify-between gap-6 items-center px-6 py-4 bg-white rounded-md shadow-sm hover:shadow-md">
+                    <div key={proj._id} className="flex flex-col sm:flex-row justify-between gap-6 sm:items-center px-6 py-4 bg-white rounded-md shadow-sm hover:shadow-md">
                         <div>
                             <span className={`mb-2 text-xs px-2 py-1 rounded-md ${priorityStyles[proj.priority]}`} >{proj.priority}</span>
                             <h3 className="text-lg font-bold pb-2">{proj.title}</h3>
@@ -174,7 +174,7 @@ export default function Projects(){
                         </div>
                     </div>
                 ))}
-                <div onClick={()=> setShowForm(!showForm)} className=" space-y-4 px-6 py-6 border-2 border-dashed border-gray-400 rounded-lg hover:border-blue-500 hover:bg-blue-400/8 ">
+                <div onClick={()=> setShowForm(!showForm)} className=" space-y-4 items-center px-6 py-6 border-2 border-dashed border-gray-400 rounded-lg hover:border-blue-500 hover:bg-blue-400/8 ">
                     <Plus size={30}/>
                     <h3 className="text-2xl text-gray-600">Add New Project</h3>
                 </div>

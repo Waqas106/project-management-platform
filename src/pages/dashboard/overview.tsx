@@ -106,7 +106,7 @@ function OverView(){
             <div className="px-4 py-2 my-4">
                 <h2 className="text-3xl font-bold">Welcome Back, {name}!</h2>
             </div>
-            <div className="grid grid-cols-3 gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
                 {overviewCards.map((card, idx)=>{
                     const Icons = card.icon;
                     return(
@@ -121,12 +121,12 @@ function OverView(){
                     )
                 })}
             </div>
-            <div className="flex gap-6 mt-6">
+            <div className="flex flex-col sm:flex-row gap-6 mt-6">
                 <div className="flex-1 p-4 bg-white rounded-lg shadow-sm">
                     <h3 className="text-lg font-bold pb-3">Upcoming Deadlines</h3>
                     <div className="space-y-2">
                         {upcomingDeadlines.map((deadline, idx)=>(
-                            <div key={idx} className="flex justify-between bg-gray-100/10 rounded-md px-4 py-2">
+                            <div key={idx} className="flex flex-col md:flex-row justify-between bg-gray-100/10 rounded-md px-4 py-2">
                                 <div className="space-y-1">
                                     <h3 className="text-md text-gray-700"> 
                                     <span className="font-bold">Project: </span>

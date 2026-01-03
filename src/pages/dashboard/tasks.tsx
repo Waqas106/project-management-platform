@@ -147,7 +147,7 @@ const updateTaskStatus = async (taskId: string, status: string) => {
         <div className="px-8 py-4 space-y-4">
             <div>
                 <h3 className="text-3xl font-bold my-4">My Productivity</h3>
-                <div className="grid grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     {productivity.map((prod, idx)=>{
                     const Icons = prod.icon;
                     return(
@@ -247,10 +247,10 @@ const updateTaskStatus = async (taskId: string, status: string) => {
             )}
 
             <div>
-                <div className="py-4 flex justify-between items-center mb-4">
+                <div className="py-4 flex flex-col sm:flex-row justify-between sm:items-center mb-4">
                     <h3 className="text-3xl font-bold">My Task Board</h3>
                     <div>
-                        <button className="flex gap-2 items-center px-4 py-2 rounded-md bg-blue-600 text-white font-bold hover:scale-102 transition duration-200 cursor-pointer "
+                        <button className="flex gap-2 my-2 sm:my-0 items-center px-4 py-2 rounded-md bg-blue-600 text-white font-bold hover:scale-102 transition duration-200 cursor-pointer "
                         onClick={()=> setShowForm(!showForm)}
                         >
                         <Plus size={20}/>
@@ -259,7 +259,7 @@ const updateTaskStatus = async (taskId: string, status: string) => {
                     </div>
                 </div>
                 <DragDropContext onDragEnd={handleDragEnd}>
-                <div className="grid grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     <Droppable droppableId="todo">
                       {(provided) => (
                         <div
