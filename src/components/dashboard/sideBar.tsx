@@ -21,7 +21,7 @@ function SideBar(){
     ]
 
     return(
-        <div className="bg-white shadow-[3px_0_6px_rgba(0,0,0,0.02)] min-h-screen w-[20vw]">
+        <div className="bg-white shadow-[3px_0_6px_rgba(0,0,0,0.02)] min-h-screen w-[40vw] sm:w-[30vw] md:w-[20vw]">
             <div className="text-3xl font-bold py-4 text-center border-b-1 border-dashed border-gray-300">
                 <h2>Planify</h2>
             </div>
