@@ -1,5 +1,5 @@
 import { Briefcase, Calendar, CircleCheck, Hourglass, Plus } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {useForm} from "react-hook-form";
 import { useDashboard } from "../../context/dashboardContext";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
