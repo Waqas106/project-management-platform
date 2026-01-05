@@ -42,7 +42,7 @@ export default function Tasks(){
         try {
             const token = localStorage.getItem("token");
 
-            const res = await fetch("http://localhost:5000/task/create", {
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/task/create`, {
                 method: "POST",
                 headers:{
                     "Content-Type" : "application/json",
@@ -124,7 +124,7 @@ const handleDragEnd = async (result: any) => {
 
 const updateTaskStatus = async (taskId: string, status: string) => {
     const token = localStorage.getItem("token");
-  const res = await fetch(`http://localhost:5000/task/${taskId}`, {
+  const res = await fetch(`${import.meta.env.VITE_API_URL}/task/${taskId}`, {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",

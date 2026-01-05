@@ -28,7 +28,7 @@ export default function Projects(){
     const onSubmit = async (data: ProjectType) =>{
         try {
             const token = localStorage.getItem("token");
-            const url = editingProject ? `http://localhost:5000/project/${editingProject._id}` : "http://localhost:5000/project/create";
+            const url = editingProject ? `${import.meta.env.VITE_API_URL}/project/${editingProject._id}` : "http://localhost:5000/project/create";
             const Method = editingProject ? "PUT" : "POST";
             const res = await fetch(url, {
                 method: Method,
@@ -68,7 +68,7 @@ export default function Projects(){
 
         const token = localStorage.getItem("token");
 
-        const res = await fetch(`http://localhost:5000/project/${id}`, {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/project/${id}`, {
             method: "DELETE",
             headers: {
                 Authorization: `Bearer ${token}`

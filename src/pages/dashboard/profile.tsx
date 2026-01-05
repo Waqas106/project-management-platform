@@ -13,7 +13,7 @@ const Profile = () => {
             const token = localStorage.getItem("token");
             if(!token) return navigate('/login');
 
-            await fetch('http://localhost:5000/api/user/profile', {
+            await fetch(`${import.meta.env.VITE_API_URL}/api/user/profile`, {
                 headers: {Authorization: `Bearer ${token}`},
             })
             .then((res)=>res.json())
@@ -43,7 +43,7 @@ const Profile = () => {
 
     const token = localStorage.getItem("token");
 
-    const res = await fetch("http://localhost:5000/api/user/update", {
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/user/update`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",

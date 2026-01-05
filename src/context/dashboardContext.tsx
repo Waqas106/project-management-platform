@@ -42,7 +42,7 @@ interface ProjectType {
     const fetchProjects = async () =>{
         setIsLoading(true);
         try {
-            const res = await fetch("http://localhost:5000/project",{
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/project`,{
                 headers: {Authorization: `Bearer ${token}`},
             });
             const data = await res.json();
@@ -57,7 +57,7 @@ interface ProjectType {
 
       const fetchTasks = async() =>{
         try {
-            const res = await fetch("http://localhost:5000/task", {
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/task`, {
                 headers:{
                     Authorization : `Bearer ${token}`
                 }
