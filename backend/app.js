@@ -9,8 +9,9 @@ const app = express();
 app.use(cors({
     origin: [
     "http://localhost:5173",
-    "https://project-management-platform-mocha.vercel.app/"
+    "https://project-management-platform-mocha.vercel.app"
   ],
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
   credentials: true
 }));
 app.use(express.json());
