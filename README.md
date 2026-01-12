@@ -6,7 +6,7 @@ A full-stack **Project Management Platform** designed to help users efficiently 
 
 ## 🔗 Live Demo
 
-* **Project Demo:** *[Add Vercel URL here]*
+* **Project Demo:** *https://project-management-platform-mocha.vercel.app/*
 
 ---
 
@@ -111,11 +111,11 @@ npm run dev
 
 ## 📸 Screenshots
 
-*Add screenshots of:*
+<img width="2534" height="1159" alt="image" src="https://github.com/user-attachments/assets/78704911-08eb-45f4-be33-392ddaa7e5cc" />
+<img width="2517" height="1180" alt="image" src="https://github.com/user-attachments/assets/d6abaa1b-2a3f-44f9-af97-a5549c5b80fd" />
+<img width="2513" height="1183" alt="image" src="https://github.com/user-attachments/assets/94490991-3cd3-4680-b319-524ed1ebb7f9" />
+<img width="2532" height="1173" alt="image" src="https://github.com/user-attachments/assets/c453b187-b750-4fe6-8b17-33467cd90658" />
 
-* Dashboard
-* Project List
-* Task Management View
 
 ---
 
